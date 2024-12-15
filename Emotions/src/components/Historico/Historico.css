@@ -1,0 +1,129 @@
+/* Layout geral */
+.history-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  padding: 10px 50px 10px 50px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.history-container h1 {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Tabela */
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.history-table th, .history-table td {
+  text-align: left;
+  padding: 15px;
+  vertical-align: middle;
+}
+
+.history-table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  border-bottom: 2px solid #dcdcdc;
+}
+
+.history-table td {
+  border-bottom: 1px solid #e0e0e0;
+  color: #555;
+  line-height: 1.6;
+}
+
+.history-table tbody tr:hover {
+  background-color: #eaeaea;
+}
+
+.history-table a {
+  color: #1c65ee;
+  text-decoration: none;
+}
+
+.history-table a:hover {
+  text-decoration: underline;
+}
+
+/* Botão de detalhes */
+.details-button {
+  background-color: #1c65ee;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.details-button:hover {
+  background-color: #0056c1;
+}
+
+/* Container de filtro */
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filter-container label {
+  font-size: 14px;
+  color: #333;
+}
+
+.filter-container input[type="date"] {
+  padding: 5px 10px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 150px;
+}
+
+.filter-container .filter-button {
+  padding: 5px 15px;
+  font-size: 14px;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.filter-container .filter-button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsividade para dispositivos móveis */
+@media (max-width: 768px) {
+  .history-container {
+    padding: 10px 20px;
+  }
+
+  .history-table th, .history-table td {
+    padding: 10px;
+  }
+
+  .filter-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filter-container input[type="date"] {
+    margin-bottom: 10px;
+  }
+}

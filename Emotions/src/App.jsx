@@ -1,38 +1,22 @@
 // src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navbar from './components/NavBar/navbar';
-import Hero from './components/Hero/Hero';
-import Programs from './components/Programs/Programs';
-import Title from './components/Title/Title';
 import Reg from './Pages/Reg';
 import RegEmocion from './Pages/RegEmocion';
+import Login from './Pages/Reg';
+import Home from './Pages/Home';
+import PrivateRouter from './components/PrivateRouter';
+import Historico from './Pages/Histoico';
 
 const App = () => {
-
-  const Layout = ({ children }) => {
-    const location = useLocation();
-  
-    
-    const hideNavbar = location.pathname === '/login';
-  };
     return (
     <Router>
       <div>
         <Routes>
-          {/* Rota principal */}
-          <Route path="/" element={
-            <>
-              <Navbar />
-              <Hero />
-              <div className="container">
-                <Title />
-                <Programs />
-              </div>
-            </>
-          } />
-          <Route path="/login" element={<Reg/>} />
-          <Route path='/regemotion' element={<RegEmocion/>}/>
+          <Route path="/" element={<Login/>}/>
+          <Route path="/home" element={<PrivateRouter><Home/></PrivateRouter>}/>
+          <Route path="/historico" element={<PrivateRouter><Historico/></PrivateRouter>} />
+          <Route path='/regemotion' element={<PrivateRouter><RegEmocion/></PrivateRouter>}/>
         </Routes>
       </div>
     </Router>

@@ -1,118 +1,147 @@
 .regemotion-container {
-    background: rgba(18, 3, 114, 0.3);
-    display: flex;
-    align-items: center;
-    padding: 196px;
-  }
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0px 10px 0px;
+}
+
+.regemotion-form {
+width: 50%;
+height: 100%;
+display: flex;
+justify-content: space-evenly;
+align-items: center;
+}
+
+.regemotion-formleft{
+width: 30%;
+height: 100%;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+.regemotion-formright{
+width: 70%;
+}
+
 
 .text-label {
-    width: 120%; /* Para garantir que o título ocupe toda a largura */
-    margin-bottom: 30px; /* Espaço abaixo do título */
+  width: 75%;
+  display: flex; /* Usando flexbox para alinhar a label e o input lado a lado */
+  flex-direction: column;
 
-  }
-  
-  .emoji-picker-container {
-    display: flex; /* Usando flexbox para alinhar emoji e emoções lado a lado */
-    align-items: center; /* Alinha verticalmente os itens no centro */
-    margin-bottom: 30px; /* Espaço abaixo do emoji */
-  }
-
-  .emoji-picker-container {
-    margin-right: 800px; /* Espaço entre o emoji e o campo de entrada */
-  }
-  
-  .emotion-label input {
-    width: 100%; /* Faz o input ocupar toda a largura disponível da label */
-    max-width: 400px; /* Opcional: limite a largura máxima do input */
-    padding: 10px; /* Adiciona preenchimento ao campo de entrada */
-    box-sizing: border-box; /* Faz com que o padding não afete a largura total */
-  }
-  
-  .emoji-circle {
-    width: 90px; /* Largura do círculo do emoji */
-    height: 90px; /* Altura do círculo do emoji */
-    border-radius: 50%; /* Faz o elemento ser um círculo */
-    background-color: #d9d9d9; /* Cor de fundo do círculo */
-    display: flex; /* Para centralizar o conteúdo dentro do círculo */
-    justify-content: center; /* Centraliza o conteúdo horizontalmente */
-    align-items: center; /* Centraliza o conteúdo verticalmente */
-    cursor: pointer; /* Muda o cursor para indicar que é clicável */
-    margin-right: 20px; /* Espaço à direita do círculo do emoji */
-  }
-  
-  .emoji-circle:hover {
-    background-color: #d0d0d0;
-  }
-  
-  /* Estilos da lista de emojis */
-  .emoji-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-    gap: 10px;
-    padding: 10px;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    position: absolute;
-    z-index: 1000;
-    width: 80%;
-  }
-  
-  .emoji-item {
-    font-size: 24px;
-    cursor: pointer;
-    text-align: center;
-    padding: 10px;
-  }
-  
-  .emoji-item:hover {
-    background-color: #f0f0f0;
-  }
-  
-
-  .emotion-label {
-    display: flex; /* Usando flexbox para alinhar a label e o input lado a lado */
-    flex-direction: column; /* Mantém a label em cima do input */
-  }
-
-  .emotion-label input {
-  width: 300px; /* Largura do input de emoções */
-  padding: 5px; /* Preenchimento do input */
-  box-sizing: border-box; /* Para que o padding não afete a largura */
-  margin-bottom: 30px;
 }
-  
-  
-  label {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-  }
-  
-  textarea {
-    width: 120%;
-    resize: none;
-    height: 100px; /* Altura do textarea */
-  }
-  
-  .submit-button {
-    align-self: flex-end; /* Posiciona o botão no canto inferior direito */
-    background-color: rgba(30, 6, 190, 0.3); /* Cor do botão */
-    color: white; /* Cor do texto do botão */
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .submit-button:hover {
-    background-color: rgba(16, 1, 114, 0.3); /* Cor ao passar o mouse */
-  }
-  
 
-  
-  .registered-emotions h2 {
-    text-align: center;
-  }
-  
+.emoji-picker-container {
+  display: flex; /* Usando flexbox para alinhar emoji e emoções lado a lado */
+  align-items: center; /* Alinha verticalmente os itens no centro */
+  margin-bottom: 30px; /* Espaço abaixo do emoji */
+}
+
+.emotion-label input {
+  width: 100%; /* Faz o input ocupar toda a largura disponível da label */
+  max-width: 400px; /* Opcional: limite a largura máxima do input */
+  padding: 10px; /* Adiciona preenchimento ao campo de entrada */
+  box-sizing: border-box; /* Faz com que o padding não afete a largura total */
+}
+
+.emoji-circle {
+  width: 120px; /* Largura do círculo do emoji */
+  height: 120px; /* Altura do círculo do emoji */
+  border-radius: 50%; /* Faz o elemento ser um círculo */
+  background-color: #d9d9d9; /* Cor de fundo do círculo */
+  display: flex; /* Para centralizar o conteúdo dentro do círculo */
+  justify-content: center; /* Centraliza o conteúdo horizontalmente */
+  align-items: center; /* Centraliza o conteúdo verticalmente */
+  cursor: pointer; /* Muda o cursor para indicar que é clicável */
+  margin-right: 20px; /* Espaço à direita do círculo do emoji */
+}
+
+.emoji-circle > span{
+  font-size: 5rem; /* Faz o emoji ocupar mais espaço */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  line-height: 1; /* Remove espaçamento vertical */
+  text-align: center;
+}
+
+.emoji-circle:hover {
+  background-color: #d0d0d0;
+}
+
+/* Estilos da lista de emojis */
+.emoji-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 10px;
+  padding: 10px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  position: absolute;
+  z-index: 1000;
+  width: 80%;
+}
+
+.emoji-item {
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  padding: 10px;
+}
+
+.emoji-item:hover {
+  background-color: #f0f0f0;
+}
+
+
+.emotion-label {
+  display: flex; /* Usando flexbox para alinhar a label e o input lado a lado */
+  flex-direction: column; /* Mantém a label em cima do input */
+}
+
+.emotion-label input {
+width: 100%; /* Largura do input de emoções */
+padding: 5px; /* Preenchimento do input */
+box-sizing: border-box; /* Para que o padding não afete a largura */
+margin-bottom: 30px;
+}
+
+
+label {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+textarea {
+  width: 100%;
+  resize: none;
+  height: 100px; /* Altura do textarea */
+}
+
+.submit-button {
+  align-self: flex-end; /* Posiciona o botão no canto inferior direito */
+  background-color: rgba(30, 6, 190, 0.3); /* Cor do botão */
+  color: white; /* Cor do texto do botão */
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: rgba(16, 1, 114, 0.3); /* Cor ao passar o mouse */
+}
+
+
+
+.registered-emotions h2 {
+  text-align: center;
+}

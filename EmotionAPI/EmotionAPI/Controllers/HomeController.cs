@@ -28,59 +28,59 @@ namespace EmotionAPI.Controllers
 
 
         public async Task<IActionResult> GetAllDocuments()
+        {
+            // Verifica se o token decodificado está presente no contexto
+            if (HttpContext.Items["User"] is not FirebaseToken decodedToken)
             {
-                // Verifica se o token decodificado está presente no contexto
-                if (HttpContext.Items["User"] is not FirebaseToken decodedToken)
-                {
-                    return Unauthorized(new { Message = "User not authenticated." });
-                }
-
-                // Referência à coleção no Firestore
-                var collectionReference = _firestoreDb.Collection("entries");
-                var snapshot = await collectionReference.GetSnapshotAsync();
-
-                var userDocuments = new List<Dictionary<string, object>>();
-
-                foreach (var document in snapshot.Documents)
-                {
-                    var data = document.ToDictionary();
-
-                    // Verifica se a entrada possui o campo "userId" e se ele corresponde ao UID do usuário
-                    if (data.TryGetValue("userId", out var userId) && userId?.ToString() == decodedToken.Uid)
-                    {
-                        // Processa o campo "data" se ele existir
-                        if (data.TryGetValue("data", out var dataField))
-                        {
-                            string dateTimeString = null;
-
-                            // Se o campo for do tipo Firestore Timestamp
-                            if (dataField is Timestamp firestoreTimestamp)
-                            {
-                                // Converte o Firestore Timestamp para DateTime
-                                var dateTimeValue = firestoreTimestamp.ToDateTime();
-
-                                // Formata o DateTime como string (exemplo: "yyyy-MM-dd HH:mm:ss")
-                                dateTimeString = dateTimeValue.ToString("dd-MM-yyyy");
-                            }
-
-                            // Substitui o valor no dicionário se a conversão foi realizada
-                            if (dateTimeString != null)
-                            {
-                                data["data"] = dateTimeString;
-                            }
-                        }
-
-                        userDocuments.Add(data);
-                    }
-                }
-
-                return Ok(userDocuments);
+                return Unauthorized(new { Message = "User not authenticated." });
             }
 
+            // Referência à coleção no Firestore
+            var collectionReference = _firestoreDb.Collection("entries");
+            var snapshot = await collectionReference.GetSnapshotAsync();
+
+            var userDocuments = new List<Dictionary<string, object>>();
+
+            foreach (var document in snapshot.Documents)
+            {
+                var data = document.ToDictionary();
+
+                // Verifica se a entrada possui o campo "userId" e se ele corresponde ao UID do usuário
+                if (data.TryGetValue("userId", out var userId) && userId?.ToString() == decodedToken.Uid)
+                {
+                    // Processa o campo "data" se ele existir
+                    if (data.TryGetValue("data", out var dataField))
+                    {
+                        string dateTimeString = null;
+
+                        // Se o campo for do tipo Firestore Timestamp
+                        if (dataField is Timestamp firestoreTimestamp)
+                        {
+                            // Converte o Firestore Timestamp para DateTime
+                            var dateTimeValue = firestoreTimestamp.ToDateTime();
+
+                            // Formata o DateTime como string (exemplo: "yyyy-MM-dd HH:mm:ss")
+                            dateTimeString = dateTimeValue.ToString("yyyy-MM-dd HH:mm:ss");
+                        }
+
+                        // Substitui o valor no dicionário se a conversão foi realizada
+                        if (dateTimeString != null)
+                        {
+                            data["data"] = dateTimeString;
+                        }
+                    }
+
+                    userDocuments.Add(data);
+                }
+            }
+
+            return Ok(userDocuments);
+        }
 
 
 
-    [HttpPost("AddDocument")]
+
+        [HttpPost("AddDocument")]
         public async Task<IActionResult> AddDocument([FromBody] TestWord data)
         {
             var collectionReference = _firestoreDb.Collection("entries");
@@ -96,7 +96,8 @@ namespace EmotionAPI.Controllers
             {
                 dictionary.Add("userId", decodedToken.Uid);
             }
- 
+            dictionary.Add("data", Google.Cloud.Firestore.Timestamp.GetCurrentTimestamp());
+
             // Save the data (including the emoji) to Firestore
             await documentReference.SetAsync(dictionary);
 

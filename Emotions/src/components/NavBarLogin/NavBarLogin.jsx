@@ -12,8 +12,8 @@ const Navbar = () => {
       <img src={LOGO} alt="" className='logo' />
       
       <ul>
-        <li><button onClick={() => navigate('/regemotion')}>Registrar Emoção</button></li>
-        <li>Histórico</li>
+        <li onClick={() => navigate('/regemotion')}>Registrar Emoção</li>
+        <li  onClick={() => navigate('/historico')}>Registrar Emoção</li>
         <li>Relatório</li>
         <li>Biblioteca</li>
       </ul>

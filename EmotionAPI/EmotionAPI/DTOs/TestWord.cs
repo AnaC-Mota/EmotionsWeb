@@ -15,8 +15,5 @@ namespace EmotionAPI.DTOs
 
         [FirestoreProperty]
         public string descricao { get; set; }
-
-        [FirestoreProperty]
-        public DateTime data { get; set; }
     }
 }

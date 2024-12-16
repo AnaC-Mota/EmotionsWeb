@@ -1,25 +1,58 @@
-// src/components/Login/Login.jsx
 import React, { useState } from 'react';
 import './Login.css';
 import LOGO from '../../assets/LOGO.png';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '../../Firebase/app'; 
+import { useNavigate } from 'react-router-dom'; 
 
 const Login = ({ isSignUp, setIsSignUp }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate(); // Hook para navegação
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    // Lógica de login aqui
-    console.log({ email, password, name });
+    setError('');
+    try {
+      if (isSignUp) {
+        // Criar o usuário com e-mail e senha
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+  
+        // Adicionar o nome do usuário
+        await updateProfile(user, {
+          displayName: name,
+        });
+  
+        console.log('Usuário cadastrado:', user);
+        alert('Conta criada com sucesso!');
+  
+        // Redirecionar para a Home
+        navigate('/home');
+      } else {
+        // Realizar login
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        console.log('Usuário logado:', userCredential.user);
+  
+        const token = await userCredential.user.getIdToken();
+        localStorage.setItem('authToken', token);
+  
+        alert('Login bem-sucedido!');
+        navigate('/home');
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      setError(error.message);
+    }
   };
-
+  
   const handleSignUp = () => {
     setIsSignUp(true);
   };
 
   const handleForgotPassword = () => {
-    // Lógica para recuperação de senha
     alert('Redirecionar para a página de recuperação de senha.');
   };
 
@@ -28,7 +61,6 @@ const Login = ({ isSignUp, setIsSignUp }) => {
       <img src={LOGO} alt="Site Logo" className="logo" />
 
       <form onSubmit={handleLoginSubmit} className="login-form">
-        {/* Título dinâmico */}
         <h2>{isSignUp ? 'Sign Up' : 'Login'}</h2>
 
         {isSignUp && (
@@ -57,6 +89,8 @@ const Login = ({ isSignUp, setIsSignUp }) => {
           required
         />
 
+        {error && <p className="error-message">{error}</p>}
+
         <div className="forgot-password" onClick={handleForgotPassword}>
           Esqueceu a senha?
         </div>
@@ -78,5 +112,3 @@ const Login = ({ isSignUp, setIsSignUp }) => {
 };
 
 export default Login;
-
-

@@ -6,6 +6,10 @@ import LOGO from '../../assets/LOGO.png'
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const logout = () =>{
+    localStorage.clear();
+    navigate('/')
+  }
 
   return (
     <nav className='container'>
@@ -13,9 +17,11 @@ const Navbar = () => {
       
       <ul>
         <li onClick={() => navigate('/regemotion')}>Registrar Emoção</li>
-        <li  onClick={() => navigate('/historico')}>Registrar Emoção</li>
+        <li  onClick={() => navigate('/historico')}>Historico</li>
         <li>Relatório</li>
         <li>Biblioteca</li>
+        <li  onClick={() => logout()}>Logout</li>
+
       </ul>
     </nav>
   )

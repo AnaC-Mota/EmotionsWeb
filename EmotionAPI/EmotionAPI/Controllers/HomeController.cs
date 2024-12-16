@@ -60,7 +60,7 @@ namespace EmotionAPI.Controllers
                             var dateTimeValue = firestoreTimestamp.ToDateTime();
 
                             // Formata o DateTime como string (exemplo: "yyyy-MM-dd HH:mm:ss")
-                            dateTimeString = dateTimeValue.ToString("yyyy-MM-dd HH:mm:ss");
+                            dateTimeString = dateTimeValue.ToString("dd-MM-yyyy");
                         }
 
                         // Substitui o valor no dicionário se a conversão foi realizada

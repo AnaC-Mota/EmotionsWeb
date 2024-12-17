@@ -1,5 +1,5 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './NavbarLogin.css'
 import LOGO from '../../assets/LOGO.png'
 
@@ -13,8 +13,9 @@ const Navbar = () => {
 
   return (
     <nav className='container'>
-      <img src={LOGO} alt="" className='logo' />
-      
+      <h1>
+        <Link to="/home">Emotions</Link>
+      </h1>      
       <ul>
         <li onClick={() => navigate('/regemotion')}>Registrar Emoção</li>
         <li  onClick={() => navigate('/historico')}>Historico</li>

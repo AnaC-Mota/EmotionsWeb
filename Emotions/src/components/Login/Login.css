@@ -79,4 +79,56 @@
   .btn-login:hover, .btn-signup:hover {
     opacity: 0.9;
   }
+
+  .no-account-text {
+    color: #506b89; /* Cor do texto */
+    font-size: 14px;
+    text-align: center;
+    margin-top: 10px;
+  }
   
+  .create-account {
+    color: #4d00d4; /* Cor do texto do link */
+    cursor: pointer;
+    text-decoration: underline; /* Deixa o texto sublinhado */
+  }
+  
+  .create-account:hover {
+    color: #3c009d; /* Cor do link ao passar o mouse */
+  }
+
+ /* Contêiner para os botões de login */
+.social-login-container {
+  display: flex;
+  justify-content: space-between; /* Espaço entre os botões */
+  gap: 2px; /* Espaçamento entre os botões */
+  width: 100%; /* Certifique-se de que ocupe toda a largura disponível */
+  margin-top: 20px;
+}
+
+/* Estilo para os botões (Google e Facebook) */
+.btn-google-circle,
+.btn-facebook-circle {
+  background-color: #ffffff; /* Cor do Google */
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-google-circle img,
+.btn-facebook-circle img {
+  width: 25px;
+  height: 25px;
+}
+
+/* Cor de fundo do botão do Facebook */
+.btn-facebook-circle {
+  background-color: #ffffff; /* Cor do Facebook */
+}

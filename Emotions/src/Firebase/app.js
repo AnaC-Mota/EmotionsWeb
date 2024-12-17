@@ -1,6 +1,6 @@
 // src/Firebase/app.js
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
 
 // Configuração do Firebase
 const firebaseConfig = {
@@ -18,5 +18,8 @@ const app = initializeApp(firebaseConfig);
 
 // Inicializar o serviço de autenticação
 const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
 
-export { auth };
+
+export { auth, googleProvider, facebookProvider  };

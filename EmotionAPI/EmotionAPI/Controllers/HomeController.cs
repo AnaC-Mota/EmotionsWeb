@@ -1,4 +1,4 @@
-﻿using EmotionAPI.DTOs; 
+﻿using EmotionAPI.DTOs;
 using EmotionAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -105,5 +105,4 @@ namespace EmotionAPI.Controllers
         }
     }
 }
-
 

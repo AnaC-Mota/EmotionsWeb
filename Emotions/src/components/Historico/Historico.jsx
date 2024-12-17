@@ -9,14 +9,25 @@ const Historico = () => {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [filteredRecords, setFilteredRecords] = useState([]);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
 
   // Função para buscar registros
   const fetchRecords = async () => {
     try {
-      const response = await APIService.Axios().get("Home/GetAllDocuments");
+      const params = {
+        startDate: startDate,
+        endDate: endDate
+      };
+  
+      const response = await APIService.Axios().get("Home/GetAllDocuments", { params });
+  
       if (response.status === 200) {
-        console.log(response.data)
+        console.log(response.data);
         setRecords(response.data);
+        setFilteredRecords(response.data);  // Inicialmente, exibe todos os registros
       } else {
         throw new Error("Erro ao buscar os registros.");
       }
@@ -27,9 +38,27 @@ const Historico = () => {
     }
   };
 
+  const filterRecordsByDate = () => {
+    let filtered = records;
+
+    if (startDate) {
+      filtered = filtered.filter((record) => new Date(record.data) >= new Date(startDate));
+    }
+
+    if (endDate) {
+      filtered = filtered.filter((record) => new Date(record.data) <= new Date(endDate));
+    }
+
+    setFilteredRecords(filtered);
+  };
+
   useEffect(() => {
     fetchRecords();
   }, []);
+  
+  useEffect(() => {
+    fetchRecords();
+  }, [startDate, endDate]);
 
   const openModal = (record) => {
     setSelectedRecord(record);
@@ -52,6 +81,26 @@ const Historico = () => {
   return (
     <div className="history-container">
       <h1>Histórico de Emoções</h1>
+      <div className="date-filter">
+        <label htmlFor="start-date">Data Início:</label>
+        <input
+          type="date"
+          id="start-date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+        />
+        
+        <label htmlFor="end-date">Data Fim:</label>
+        <input
+          type="date"
+          id="end-date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
+        
+        <button onClick={filterRecordsByDate}>Filtrar</button>
+      </div>
+
       {records.length === 0 ? (
         <p>Nenhum registro encontrado para o usuário autenticado.</p>
       ) : (

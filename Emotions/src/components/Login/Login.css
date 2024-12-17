@@ -1,4 +1,3 @@
-/* src/components/Login/Login.css */
 .login-container {
     display: flex;
     flex-direction: column;
@@ -81,54 +80,48 @@
   }
 
   .no-account-text {
-    color: #506b89; /* Cor do texto */
+    color: #506b89; 
     font-size: 14px;
     text-align: center;
     margin-top: 10px;
   }
   
   .create-account {
-    color: #4d00d4; /* Cor do texto do link */
+    color: #4d00d4; 
     cursor: pointer;
-    text-decoration: underline; /* Deixa o texto sublinhado */
+    text-decoration: underline; 
   }
   
   .create-account:hover {
-    color: #3c009d; /* Cor do link ao passar o mouse */
+    color: #3c009d; 
   }
 
- /* Contêiner para os botões de login */
-.social-login-container {
-  display: flex;
-  justify-content: space-between; /* Espaço entre os botões */
-  gap: 2px; /* Espaçamento entre os botões */
-  width: 100%; /* Certifique-se de que ocupe toda a largura disponível */
-  margin-top: 20px;
-}
+  .google-login-container {
+    margin-top: 20px; 
+  }
+  
+  .btn-google-circle {
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50%; 
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .btn-google-circle:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); 
+  }
+  
+  .google-logo {
+    width: 24px; 
+    height: 24px;
+  }
+  
 
-/* Estilo para os botões (Google e Facebook) */
-.btn-google-circle,
-.btn-facebook-circle {
-  background-color: #ffffff; /* Cor do Google */
-  border: none;
-  border-radius: 50%;
-  padding: 10px;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
 
-.btn-google-circle img,
-.btn-facebook-circle img {
-  width: 25px;
-  height: 25px;
-}
-
-/* Cor de fundo do botão do Facebook */
-.btn-facebook-circle {
-  background-color: #ffffff; /* Cor do Facebook */
-}

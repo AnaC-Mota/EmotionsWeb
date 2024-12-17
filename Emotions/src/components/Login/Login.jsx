@@ -128,15 +128,15 @@ const Login = ({ isSignUp, setIsSignUp }) => {
           )}
         </div>
         {!isSignUp && (
-          <div className="social-login-container">
-            <button onClick={handleGoogleLogin} className="btn-google-circle">
-              <img
-                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                alt="Google Logo"
-                className="google-logo"
-              />
-            </button>
-          </div>
+          <div className="google-login-container">
+          <button onClick={handleGoogleLogin} className="btn-google-circle">
+            <img
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              alt="Google Logo"
+              className="google-logo"
+            />
+          </button>
+        </div>
         )}
       </form>
     </div>

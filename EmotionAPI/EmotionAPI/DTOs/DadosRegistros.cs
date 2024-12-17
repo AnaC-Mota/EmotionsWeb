@@ -2,7 +2,7 @@
 
 namespace EmotionAPI.DTOs
 {
-    public class TestWord
+    public class DadosRegistros
     {
         [FirestoreProperty]
         public string titulo { get; set; }

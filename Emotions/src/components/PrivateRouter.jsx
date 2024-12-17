@@ -1,9 +1,7 @@
 import { useState, useEffect, Component } from "react";
 import { Route, Navigate } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
 
 function PrivateRouter({ children, ...rest }) {
-    const { isAuthenticated, isLoading } = useAuth0();
     const [isAuthorized, setIsAuthorized] = useState(null)
 
     useEffect(() => {
@@ -26,7 +24,7 @@ function PrivateRouter({ children, ...rest }) {
         return <div>Loading...</div>
     }
 
-    return isAuthorized ? children : <Navigate to="/login"></Navigate>
+    return isAuthorized ? children : <Navigate to="/"></Navigate>
 }
 
 export default PrivateRouter;

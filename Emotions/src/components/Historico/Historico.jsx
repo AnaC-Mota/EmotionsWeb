@@ -9,7 +9,6 @@ const Historico = () => {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
-  const [filteredRecords, setFilteredRecords] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
@@ -18,16 +17,14 @@ const Historico = () => {
   const fetchRecords = async () => {
     try {
       const params = {
-        startDate: startDate,
-        endDate: endDate
+        startDate: startDate ? new Date(startDate).toISOString() : null,
+        endDate: endDate ? new Date(endDate).toISOString() : null
       };
   
       const response = await APIService.Axios().get("Home/GetAllDocuments", { params });
   
       if (response.status === 200) {
-        console.log(response.data);
         setRecords(response.data);
-        setFilteredRecords(response.data);  // Inicialmente, exibe todos os registros
       } else {
         throw new Error("Erro ao buscar os registros.");
       }
@@ -37,24 +34,6 @@ const Historico = () => {
       setLoading(false);
     }
   };
-
-  const filterRecordsByDate = () => {
-    let filtered = records;
-
-    if (startDate) {
-      filtered = filtered.filter((record) => new Date(record.data) >= new Date(startDate));
-    }
-
-    if (endDate) {
-      filtered = filtered.filter((record) => new Date(record.data) <= new Date(endDate));
-    }
-
-    setFilteredRecords(filtered);
-  };
-
-  useEffect(() => {
-    fetchRecords();
-  }, []);
   
   useEffect(() => {
     fetchRecords();
@@ -98,7 +77,7 @@ const Historico = () => {
           onChange={(e) => setEndDate(e.target.value)}
         />
         
-        <button onClick={filterRecordsByDate}>Filtrar</button>
+        <button onClick={fetchRecords}>Filtrar</button>
       </div>
 
       {records.length === 0 ? (

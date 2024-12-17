@@ -3,7 +3,9 @@ import axios from 'axios';
 import './RegEmotion.css';
 import emotionServices from '../../services/emotion-services';
 import {APIService}  from "../../http-common";
+import { useNavigate } from 'react-router-dom';
 
+//lista de emojis
 const emojiList = [
   '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', 
   '🙂', '🙃', '😉', '😌', '😍', '😘', '😗', '😙', '😚', 
@@ -20,14 +22,15 @@ const RegEmotion = () => {
   const [description, setDescription] = useState('');
   const [selectedEmoji, setSelectedEmoji] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Divide as emoções separadas por vírgula em um array
+    // Divide as emoções por ,
     const emotionArray = emotions.split(',').map(emotion => emotion.trim());
 
-    // Armazena o novo título, array de emoções e descrição no estado
+    // Armazena os campos de reistro
     const newEmotion = { 
       titulo: title, 
       emocao: emotions,
@@ -40,7 +43,8 @@ const RegEmotion = () => {
       const response = await APIService.Axios().post("Home/AddDocument", newEmotion);
       console.log(response.data)
       if (response.status==200) {
-        alert('Registro de emoção salvo com sucesso!');
+        navigate('/historico');
+
       } else {
         alert('Erro ao salvar o registro.');
       }
@@ -98,6 +102,7 @@ const RegEmotion = () => {
             )}
            </div>
           </div>
+        
         <div className='regemotion-formright'>
           <label className='text-label'>
             Título:

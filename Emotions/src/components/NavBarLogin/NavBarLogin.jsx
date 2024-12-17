@@ -1,7 +1,6 @@
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import './NavbarLogin.css'
-import LOGO from '../../assets/LOGO.png'
 
 
 const Navbar = () => {
@@ -18,10 +17,10 @@ const Navbar = () => {
       </h1>      
       <ul>
         <li onClick={() => navigate('/regemotion')}>Registrar Emoção</li>
-        <li  onClick={() => navigate('/historico')}>Historico</li>
+        <li onClick={() => navigate('/historico')}>Historico</li>
         <li>Relatório</li>
         <li>Biblioteca</li>
-        <li  onClick={() => logout()}>Logout</li>
+        <li onClick={() => logout()}>Logout</li>
 
       </ul>
     </nav>

@@ -1,4 +1,3 @@
-/* Layout geral */
 .history-container {
   display: flex;
   flex-direction: column;
@@ -16,7 +15,6 @@
   margin-bottom: 20px;
 }
 
-/* Filtro de data */
 .date-filter {
   display: flex;
   align-items: center;
@@ -53,7 +51,6 @@
   background-color: #0056b3;
 }
 
-/* Tabela */
 .history-table {
   width: 100%;
   border-collapse: collapse;
@@ -94,7 +91,6 @@
   text-decoration: underline;
 }
 
-/* Botão de detalhes */
 .details-button {
   background-color: #1c65ee;
   color: white;
@@ -110,7 +106,6 @@
   background-color: #0056c1;
 }
 
-/* Responsividade para dispositivos móveis */
 @media (max-width: 768px) {
   .history-container {
     padding: 10px 20px;

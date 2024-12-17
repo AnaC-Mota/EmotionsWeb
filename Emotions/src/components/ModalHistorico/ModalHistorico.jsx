@@ -29,7 +29,6 @@ const ModalHistorico = ({ isOpen, onRequestClose, record }) => {
             : "N/A"}
         </p>
         <p><strong>Descrição:</strong> {record.descricao}</p>
-        {/* Adicione mais campos se necessário */}
       </div>
     </div>
   );

@@ -2,53 +2,32 @@ import React, { useState, useEffect } from 'react';
 import './Login.css';
 import LOGO from '../../assets/LOGO.png';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, signInWithPopup } from 'firebase/auth';
-import { auth, googleProvider, facebookProvider } from '../../Firebase/app';
+import { auth, googleProvider} from '../../Firebase/app';
 import { useNavigate } from 'react-router-dom';
-import { FacebookAuthProvider } from 'firebase/auth';
 
 const Login = ({ isSignUp, setIsSignUp }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate(); // Hook para navegação
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    // Inicialização do Facebook SDK
-    if (window.FB) {
-      window.FB.init({
-        appId: '549772114713245', // Substitua pelo seu App ID do Facebook
-        cookie: true,
-        xfbml: true,
-        version: 'v10.0',
-      });
-
-      console.log("Facebook SDK carregado corretamente!");
-    } else {
-      console.error("Erro ao carregar o Facebook SDK.");
-    }
-  }, []);// A dependência vazia significa que a inicialização ocorrerá uma vez ao montar o componente
-
-  // Função para login com email e senha
+  // login com email e senha
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
+      // Se não tiver credencial
       if (isSignUp) {
-        // Criar o usuário com e-mail e senha
+        // Criar o usuário
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-
-        // Adicionar o nome do usuário
         await updateProfile(user, {
           displayName: name,
         });
-
         console.log('Usuário cadastrado:', user);
-        alert('Conta criada com sucesso!');
-
-        // Redirecionar para a Home
         navigate('/home');
+
       } else {
         // Realizar login
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -57,7 +36,6 @@ const Login = ({ isSignUp, setIsSignUp }) => {
         const token = await userCredential.user.getIdToken();
         localStorage.setItem('authToken', token);
 
-        alert('Login bem-sucedido!');
         navigate('/home');
       }
     } catch (error) {
@@ -66,16 +44,17 @@ const Login = ({ isSignUp, setIsSignUp }) => {
     }
   };
 
-  // Função para login com Google
+  // login com Google
   const handleGoogleLogin = async () => {
     setError('');
     try {
+      //autenticar o usuário com um popup
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
   
       console.log('Usuário autenticado pelo Google:', user);
   
-      // Armazenar o token do usuário (se necessário)
+      // Armazenar o token do usuário
       const token = await user.getIdToken();
       localStorage.setItem('authToken', token);
   
@@ -86,33 +65,7 @@ const Login = ({ isSignUp, setIsSignUp }) => {
     }
   };
 
-  const handleFacebookLogin = () => {
-    window.FB.login((response) => {
-      if (response.authResponse) {
-        const { accessToken } = response.authResponse;
-        const credential = FacebookAuthProvider.credential(accessToken);
-
-        signInWithPopup(auth, credential)
-          .then((userCredential) => {
-            const user = userCredential.user;
-            console.log('Usuário autenticado pelo Facebook:', user);
-
-            // Armazenando o token
-            user.getIdToken().then((token) => {
-              localStorage.setItem('authToken', token);
-              navigate('/home');
-            });
-          })
-          .catch((error) => {
-            console.error('Erro ao autenticar com o Facebook:', error);
-            setError('Erro ao autenticar com o Facebook. Tente novamente.');
-          });
-      } else {
-        console.log('Falha no login do Facebook');
-      }
-    }, { scope: 'email' }); // Aqui você pode adicionar permissões que desejar (como 'email')
-  };
-
+  //pra fazer o cadastro
   const handleSignUp = () => {
     setIsSignUp(true);
   };
@@ -174,7 +127,6 @@ const Login = ({ isSignUp, setIsSignUp }) => {
             </p>
           )}
         </div>
-        {/* Contêiner para os botões do Google e Facebook */}
         {!isSignUp && (
           <div className="social-login-container">
             <button onClick={handleGoogleLogin} className="btn-google-circle">
@@ -182,13 +134,6 @@ const Login = ({ isSignUp, setIsSignUp }) => {
                 src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                 alt="Google Logo"
                 className="google-logo"
-              />
-            </button>
-            <button onClick={handleFacebookLogin} className="btn-facebook-circle">
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
-                alt="Facebook Logo"
-                className="facebook-logo"
               />
             </button>
           </div>

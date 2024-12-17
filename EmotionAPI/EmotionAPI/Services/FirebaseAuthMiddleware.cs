@@ -18,25 +18,24 @@ public class FirebaseAuthMiddleware
 
         if (string.IsNullOrEmpty(token))
         {
-            context.Response.StatusCode = 401; // Unauthorized
+            context.Response.StatusCode = 401;
             await context.Response.WriteAsync("Authorization token is missing.");
             return;
         }
         try
         {
-            // Verify Firebase ID token
+            // Verifica o token na firebase
             var decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(token);
-            context.Items["User"] = decodedToken;  // Store decoded token for later use in the controller
+            context.Items["User"] = decodedToken;
         }
         catch (Exception)
         {
-            // If token verification fails, return unauthorized response
-            context.Response.StatusCode = 401; // Unauthorized
+            context.Response.StatusCode = 401;
             await context.Response.WriteAsync("Invalid or expired token.");
             return;
         }
 
-        await _next(context);  // Proceed to the next middleware/controller
+        await _next(context);
     }
 }
 

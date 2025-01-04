@@ -19,7 +19,36 @@ builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Emotion API", Version = "v1" });
+
+    // Adicionando a definição de segurança para o Swagger
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Description = "JWT Authorization header using the Bearer scheme. Enter your token below."
+    });
+
+    // Adicionando a aplicação da segurança em todas as requisições
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 // Path to the service account JSON key
 string pathToCredential = "./AdminSDK.json";

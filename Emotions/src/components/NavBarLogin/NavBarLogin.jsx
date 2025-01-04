@@ -18,7 +18,7 @@ const Navbar = () => {
       <ul>
         <li onClick={() => navigate('/regemotion')}>Registrar Emoção</li>
         <li onClick={() => navigate('/historico')}>Historico</li>
-        <li>Relatório</li>
+        <li onClick={() => navigate('/relatorio')}>Relatório</li>
         <li>Biblioteca</li>
         <li onClick={() => logout()}>Logout</li>
 

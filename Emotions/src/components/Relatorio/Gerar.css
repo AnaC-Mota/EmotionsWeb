@@ -1,0 +1,91 @@
+.generate-report-page {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .form-container {
+    margin-bottom: 20px;
+  }
+  
+  .form-container label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .form-container input {
+    margin-bottom: 10px;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 4px;  /* Borda arredondada */
+    border: none;  /* Remove a borda preta */
+    background-color: #f8f9fa;
+  }
+
+  .date-range-container {
+    display: flex;
+    gap: 10px; /* Espaçamento horizontal entre os campos */
+    align-items: center;
+  }
+  
+  .date-field {
+    display: flex;
+    flex-direction: column;
+    width: 20%; 
+  }
+  
+  .date-field label {
+    margin-bottom: 5px;
+  }
+  
+  .date-field input {
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .fetch-records-button,
+  .generate-report-button {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .error-message {
+    color: red;
+  }
+  
+  .records-table-container {
+    margin-top: 20px;
+  }
+  
+  .records-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .records-table th,
+  .records-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .records-table th {
+    background-color: #f2f2f2;
+    text-align: left;
+  }
+  

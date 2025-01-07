@@ -31,19 +31,24 @@ public class GoogleSheetsService
         return service;
     }
 
-    // Método para escrever dados na planilha do Google Sheets
     public static void WriteToSheet(List<IList<object>> values)
     {
         var service = GetSheetsService();
 
-        var valueRange = new ValueRange();
-        valueRange.Values = values;
+        // Limpa os dados existentes na planilha
+        ClearSheet();
 
-        var appendRequest = service.Spreadsheets.Values.Append(valueRange, SpreadsheetId, $"{SheetName}!A1");
-        appendRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.USERENTERED;
+        // Define os valores a serem escritos
+        var valueRange = new ValueRange { Values = values };
 
-        var appendResponse = appendRequest.Execute();
+        // Define a célula de início como A1
+        var updateRequest = service.Spreadsheets.Values.Update(valueRange, SpreadsheetId, $"{SheetName}!A1");
+        updateRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
+
+        // Executa a solicitação de escrita
+        updateRequest.Execute();
     }
+
 
     // Método para converter os dados do Firestore para o formato do Google Sheets
     public static List<IList<object>> ConvertToSheetFormat(List<Dictionary<string, object>> firestoreEntries)
@@ -70,6 +75,19 @@ public class GoogleSheetsService
         }
 
         return sheetData;
+    }
+
+    public static void ClearSheet()
+    {
+        var service = GetSheetsService();
+
+        // Define o intervalo a ser limpo (todas as células da aba)
+        var range = $"{SheetName}!A:Z"; // Ajuste conforme o número de colunas usadas
+        var clearRequest = new ClearValuesRequest();
+
+        // Envia a solicitação para limpar os dados
+        var request = service.Spreadsheets.Values.Clear(clearRequest, SpreadsheetId, range);
+        request.Execute();
     }
 
 }

@@ -67,7 +67,10 @@ builder.Services.AddSingleton<FirestoreDb>(sp =>
     return FirestoreDb.Create("emocoes-4f9b5");
 });
 
+builder.Services.AddSingleton<ChatGptService>();
 
+// Registrar o PdfService como Singleton
+builder.Services.AddSingleton<PdfService>();
 
 // Configure o esquema de autenticação e validadores de token
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

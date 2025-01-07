@@ -4,8 +4,11 @@ class EmotionService{
     create(data){
         return APIService.Axios().post("Home/AddDocument", data);
     }
-    get(){
-        return APIService.Axios().get("Home/GetAllDocuments");
+    getdocuments(){
+        return APIService.Axios().post("Home/GetAllDocuments");
+    }
+    post(){
+        return APIService.Axios().post("Home/Planilha");
     }
 }
 

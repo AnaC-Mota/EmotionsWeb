@@ -17,11 +17,11 @@ const Historico = () => {
   const fetchRecords = async () => {
     try {
       const params = {
-        startDate: startDate ? new Date(startDate).toISOString() : null,
-        endDate: endDate ? new Date(endDate).toISOString() : null
+        startDate: startDate ? new Date(startDate) : null,
+        endDate: endDate ? new Date(endDate): null
       };
   
-      const response = await APIService.Axios().get("Home/GetAllDocuments", { params });
+      const response = await APIService.Axios().post("Home/GetAllDocuments", { ...params });
   
       if (response.status === 200) {
         setRecords(response.data);

@@ -9,6 +9,7 @@ using Google.Cloud.Firestore;
 using System.Text.Json;
 using System.Reflection;
 using Firebase.Auth;
+using static Google.Cloud.Firestore.V1.StructuredQuery.Types;
 
 namespace EmotionAPI.Controllers
 {
@@ -24,10 +25,10 @@ namespace EmotionAPI.Controllers
         }
 
 
-        [HttpGet("GetAllDocuments")]
+        [HttpPost("GetAllDocuments")]
 
 
-        public async Task<IActionResult> GetAllDocuments(DateTime? startDate, DateTime? endDate)
+        public async Task<IActionResult> GetAllDocuments([FromBody] FilterDTO filter)
         {
             // Verifica se o token existe
             if (HttpContext.Items["User"] is not FirebaseToken decodedToken)
@@ -49,12 +50,13 @@ namespace EmotionAPI.Controllers
                 {
                     if (data.TryGetValue("data", out var dataField))
                     {
+                        var dateTimeValue = new DateTime();
                         string dateTimeString = null;
 
                         if (dataField is Timestamp firestoreTimestamp)
                         {
                             // Converte Timestamp para DateTime
-                            var dateTimeValue = firestoreTimestamp.ToDateTime();
+                            dateTimeValue = firestoreTimestamp.ToDateTime();
                             dateTimeString = dateTimeValue.ToString("dd-MM-yyyy");
                         }
 
@@ -63,19 +65,23 @@ namespace EmotionAPI.Controllers
                         {
                             data["data"] = dateTimeString;
 
-                            if (startDate.HasValue && DateTime.TryParse(dateTimeString, out var recordDate) && recordDate < startDate.Value)
+                            if (filter.startDate.HasValue && DateTime.TryParse(dateTimeString, out var recordDate) && recordDate < filter.startDate.Value)
                             {
-                                continue; // Desconsidera registros anteriores à startDate
+                                continue;
                             }
 
-                            if (endDate.HasValue && DateTime.TryParse(dateTimeString, out var recordDate2) && recordDate2 > endDate.Value)
+                            if (filter.endDate.HasValue && DateTime.TryParse(dateTimeString, out var recordDate2) && recordDate2 > filter.endDate.Value)
                             {
-                                continue; // Desconsidera registros posteriores à endDate
+                                continue;
                             }
                         }
-                    }
 
-                    userDocuments.Add(data);
+                        if (dateTimeValue >= filter.startDate && dateTimeValue <= filter.endDate)
+                        {
+                            userDocuments.Add(data);
+                        }
+
+                    }
                 }
             }
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { APIService } from "../../http-common";
 import "./Gerar.css";
-import Navbar from "../NavBarLogin/NavBarLogin"; // Importando a Navbar
+import Navbar from "../NavBarLogin/NavBarLogin";
 
 const GerarRelatorio = () => {
   const [startDate, setStartDate] = useState("");
@@ -11,20 +11,45 @@ const GerarRelatorio = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Função para truncar datas para YYYY-MM-DD
+  const truncateToDate = (isoDate) => {
+    const date = new Date(isoDate);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  };
+
+  // Buscar registros do backend
   const fetchRecords = async () => {
     setLoading(true);
     setError(null);
 
     try {
+      // Validação de data
+      if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+        throw new Error("A data de início não pode ser maior que a data de fim.");
+      }
+
       const params = {
-        startDate: startDate ? new Date(startDate).toISOString() : null,
-        endDate: endDate ? new Date(endDate).toISOString() : null,
+        startDate: startDate ? new Date(startDate) : null,
+        endDate: endDate ? new Date(endDate) : null,
       };
 
-      const response = await APIService.Axios().get("Home/GetAllDocuments", { params });
-
+      // Buscar registros
+      const response = await APIService.Axios().post("Home/GetAllDocuments", { ...params });
+      console.log(response.data
+      )
       if (response.status === 200) {
         setRecords(response.data);
+
+        // Enviar registros filtrados para a planilha
+        const planilhaResponse = await APIService.Axios().post("Planilha", {
+          ...params
+        });
+
+        if (planilhaResponse.status === 200) {
+          console.log("Registros enviados com sucesso para a planilha.");
+        } else {
+          throw new Error("Erro ao enviar registros para a planilha.");
+        }
       } else {
         throw new Error("Erro ao buscar registros.");
       }
@@ -35,20 +60,19 @@ const GerarRelatorio = () => {
     }
   };
 
+  // Gerar relatório
   const gerarRelatorio = () => {
     if (!reportName) {
       alert("Por favor, insira um nome para o relatório.");
       return;
     }
-
-    // Aqui você pode integrar com outra API para salvar ou gerar o relatório
     console.log("Relatório Gerado:", { reportName, records });
     alert("Relatório gerado com sucesso!");
   };
 
   return (
     <>
-      <Navbar /> {/* Adicionando a Navbar */}
+      <Navbar />
       <div className="generate-report-page">
         <h1>Gerar Relatório</h1>
         <div className="form-container">
@@ -82,13 +106,16 @@ const GerarRelatorio = () => {
               />
             </div>
 
-            <button onClick={fetchRecords} className="fetch-records-button">
-              Buscar Registros
+            <button
+              onClick={fetchRecords}
+              className="fetch-records-button"
+              disabled={loading}
+            >
+              {loading ? "Buscando..." : "Buscar Registros"}
             </button>
           </div>
         </div>
 
-        {loading && <p>Carregando registros...</p>}
         {error && <p className="error-message">Erro: {error}</p>}
 
         {records.length > 0 && (
@@ -106,19 +133,13 @@ const GerarRelatorio = () => {
               <tbody>
                 {records.map((record, index) => (
                   <tr key={record.id || index}>
-                    <td>
-                  { 
-                     record.data.toLocaleString()
-              }
-                </td>
-                <td>{record.Emoji}</td>
-                <td>{record.titulo}</td>
+                    <td>{new Date(record.data).toLocaleDateString()}</td>
+                    <td>{record.Emoji}</td>
+                    <td>{record.titulo}</td>
                     <td>
                       {Array.isArray(record.emocao)
                         ? record.emocao.join(", ")
-                        : typeof record.emocao === "string"
-                        ? record.emocao
-                        : "N/A"}
+                        : record.emocao || "N/A"}
                     </td>
                   </tr>
                 ))}
@@ -128,8 +149,12 @@ const GerarRelatorio = () => {
         )}
 
         {records.length > 0 && (
-          <button onClick={gerarRelatorio} className="generate-report-button">
-            Gerar Relatório
+          <button
+            onClick={gerarRelatorio}
+            className="generate-report-button"
+            disabled={loading}
+          >
+            {loading ? "Gerando..." : "Gerar Relatório"}
           </button>
         )}
       </div>

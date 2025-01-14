@@ -8,7 +8,7 @@ class EmotionService{
         return APIService.Axios().post("Home/GetAllDocuments");
     }
     post(){
-        return APIService.Axios().post("Home/Planilha");
+        return APIService.Axios().post("Grafico");
     }
 }
 

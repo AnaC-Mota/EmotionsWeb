@@ -36,7 +36,9 @@ namespace EmotionAPI.Controllers
                 return Unauthorized(new { Message = "User not authenticated." });
             }
 
-            var collectionReference = _firestoreDb.Collection("entries");
+            DateTime startDateTime = (DateTime)(filter.startDate != null ? filter.startDate : DateTime.MinValue.ToUniversalTime());
+            DateTime endDateTime = (DateTime)(filter.endDate != null ? filter.endDate : DateTime.MaxValue.ToUniversalTime());
+            var collectionReference = _firestoreDb.Collection("entries").WhereGreaterThanOrEqualTo("data", Timestamp.FromDateTime(startDateTime)).WhereLessThanOrEqualTo("data", Timestamp.FromDateTime(endDateTime));
             var snapshot = await collectionReference.GetSnapshotAsync();
 
             var userDocuments = new List<Dictionary<string, object>>();
@@ -50,13 +52,12 @@ namespace EmotionAPI.Controllers
                 {
                     if (data.TryGetValue("data", out var dataField))
                     {
-                        var dateTimeValue = new DateTime();
-                        string dateTimeString = null;
+                        string? dateTimeString = null;
 
                         if (dataField is Timestamp firestoreTimestamp)
                         {
                             // Converte Timestamp para DateTime
-                            dateTimeValue = firestoreTimestamp.ToDateTime();
+                            var dateTimeValue = firestoreTimestamp.ToDateTime();
                             dateTimeString = dateTimeValue.ToString("dd-MM-yyyy");
                         }
 
@@ -64,23 +65,8 @@ namespace EmotionAPI.Controllers
                         if (dateTimeString != null)
                         {
                             data["data"] = dateTimeString;
-
-                            if (filter.startDate.HasValue && DateTime.TryParse(dateTimeString, out var recordDate) && recordDate < filter.startDate.Value)
-                            {
-                                continue;
-                            }
-
-                            if (filter.endDate.HasValue && DateTime.TryParse(dateTimeString, out var recordDate2) && recordDate2 > filter.endDate.Value)
-                            {
-                                continue;
-                            }
                         }
-
-                        if (dateTimeValue >= filter.startDate && dateTimeValue <= filter.endDate)
-                        {
-                            userDocuments.Add(data);
-                        }
-
+                        userDocuments.Add(data);
                     }
                 }
             }

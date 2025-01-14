@@ -30,4 +30,28 @@
   .create-report-button:hover {
     background-color: #007bff; /* Azul mais escuro ao passar o mouse */
   }
+
+  .records-table-container {
+    margin-top: 20px;
+  }
+  
+  .records-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .records-table th,
+  .records-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .records-table th {
+    background-color: #f2f2f2;
+    text-align: left;
+  }
   

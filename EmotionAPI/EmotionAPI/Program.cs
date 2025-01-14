@@ -5,6 +5,7 @@ using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Google.Cloud.Firestore;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,10 +68,11 @@ builder.Services.AddSingleton<FirestoreDb>(sp =>
     return FirestoreDb.Create("emocoes-4f9b5");
 });
 
-builder.Services.AddSingleton<ChatGptService>();
 
 // Registrar o PdfService como Singleton
 builder.Services.AddSingleton<PdfService>();
+builder.Services.AddSingleton<GoogleSheetsService>();
+builder.Services.AddSingleton<GraficoService>();
 
 // Configure o esquema de autenticação e validadores de token
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -87,6 +89,35 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+var filesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files");
+if (!Directory.Exists(filesDirectory))
+{
+    Directory.CreateDirectory(filesDirectory);
+}
+
+var imagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+if (!Directory.Exists(imagesDirectory))
+{
+    Directory.CreateDirectory(imagesDirectory);
+}
+
+app.UseStaticFiles(); // Enables serving static files
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files")),
+    RequestPath = "/files"
+});
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images")),
+    RequestPath = "/images"
+});
+
 
 // Configure o pipeline de requisição HTTP
 if (app.Environment.IsDevelopment())

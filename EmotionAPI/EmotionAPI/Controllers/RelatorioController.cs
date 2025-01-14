@@ -6,25 +6,28 @@ using Google.Cloud.Firestore;
 using Google.Cloud.Firestore.V1;
 using Microsoft.Win32;
 using FirebaseAdmin.Auth;
+using Google.Protobuf.Reflection;
+using Firebase.Auth;
 
 public class RelatorioController : Controller
 {
     private readonly FirestoreDb _firestoreDb;
     private readonly GoogleSheetsService _googleSheetsService;
-    private readonly ChatGptService _chatGptService;
     private readonly PdfService _pdfService;
+    private readonly GraficoService _graficoService;
+
 
     public RelatorioController(FirestoreDb firestoreDb,
-                                ChatGptService chatGptService,
-                                PdfService pdfService)
+                                PdfService pdfService,
+                                GraficoService graficoService)
     {
         _firestoreDb = firestoreDb;
         _googleSheetsService = new GoogleSheetsService();
-        _chatGptService = chatGptService;
         _pdfService = pdfService;
+        _graficoService = graficoService;
     }
 
-    [HttpPost("Planilha")]
+    [HttpPost("Grafico")]
     public async Task<IActionResult> CriarRelatorio([FromBody] FilterDTO filter)
     {
         try
@@ -38,7 +41,8 @@ public class RelatorioController : Controller
             var snapshot = await entriesRef.GetSnapshotAsync();
 
             var userDocuments = new List<Dictionary<string, object>>();
-
+            DateTime startDateTime = (DateTime)(filter.startDate != null ? filter.startDate : DateTime.MinValue.ToUniversalTime());
+            DateTime endDateTime = (DateTime)(filter.endDate != null ? filter.endDate : DateTime.MaxValue.ToUniversalTime());
             foreach (var document in snapshot.Documents)
             {
                 var data = document.ToDictionary();
@@ -74,26 +78,64 @@ public class RelatorioController : Controller
                             }
                         }
 
-                        if(dateTimeValue >= filter.startDate && dateTimeValue <= filter.endDate)
+                        if (dateTimeValue >= filter.startDate && dateTimeValue <= filter.endDate)
                         {
                             userDocuments.Add(data);
                         }
-                        
+
                     }
 
                 }
             }
 
-            // Converte os dados em formato de planilha
-            List<IList<object>> sheetData = GoogleSheetsService.ConvertToSheetFormat(userDocuments);
+            var contagemEmocoes = new Dictionary<string, int>();
 
-            // Limpa os dados existentes na planilha
-            GoogleSheetsService.ClearSheet();
+            foreach (var document in userDocuments)
+            {
+                // Check if the emotion field exists in the document
+                if (document.TryGetValue("emocao", out var emocao))
+                {
+                    if (emocao != null)
+                    {
+                        string emocaoValue = emocao.ToString();
 
-            // Insere os novos dados na planilha
-            GoogleSheetsService.WriteToSheet(sheetData);
+                        if (contagemEmocoes.ContainsKey(emocaoValue))
+                        {
+                            // If the emotion exists, increment the count
+                            contagemEmocoes[emocaoValue]++;
+                        }
+                        else
+                        {
+                            // If it doesn't exist, add it to the dictionary with a count of 1
+                            contagemEmocoes[emocaoValue] = 1;
+                        }
+                    }
+                }
+            }
 
-            return Ok("Registros substituídos na planilha com sucesso!");
+            string caminhoImagem = _graficoService.GerarGraficoDeEmocoes(contagemEmocoes);
+
+            string pdfUrl = _pdfService.GerarPDFComImagem(caminhoImagem);
+
+            string fullPdfUrl = $"{Request.Scheme}://{Request.Host}{pdfUrl}";
+
+            var relatorioRef = _firestoreDb.Collection("relatorios").Document();
+
+            // Criação do dicionário com os dados do relatório
+            var dadosRelatorio = new Dictionary<string, object>
+            {
+            { "UserId", decodedToken.Uid },                 
+            { "data_fim", Timestamp.FromDateTime(endDateTime) },
+            { "data_inicio", Timestamp.FromDateTime(startDateTime) },
+            { "data_reg", Timestamp.FromDateTime(DateTime.UtcNow) },
+            { "nome", filter.Title != null ? filter.Title : "" }, 
+            { "relatorio", fullPdfUrl } 
+        };
+
+            // Salvar o documento na coleção "relatorio"
+            await relatorioRef.SetAsync(dadosRelatorio);
+
+            return Ok(new { pdfPath = fullPdfUrl });
         }
         catch (Exception ex)
         {
@@ -101,8 +143,8 @@ public class RelatorioController : Controller
         }
     }
 
-    [HttpPost("RelatorioAdicional")]
-    public async Task<IActionResult> GerarRelatorioAdicional(DateTime? startDate, DateTime? endDate)
+    [HttpGet("Relatorios")]
+    public async Task<IActionResult> GetAllRelatoriosAsync()
     {
         try
         {
@@ -111,74 +153,77 @@ public class RelatorioController : Controller
                 return Unauthorized(new { Message = "User not authenticated." });
             }
 
-            var entriesRef = _firestoreDb.Collection("entries");
-            var snapshot = await entriesRef.GetSnapshotAsync();
+            var relatorioRef = _firestoreDb.Collection("relatorios");
 
-            var userDocuments = new List<Dictionary<string, object>>();
-            int totalEntries = 0;
+            var snapshot = await relatorioRef.GetSnapshotAsync();
+
+            var relatorios = new List<Dictionary<string, object>>();
 
             foreach (var document in snapshot.Documents)
             {
                 var data = document.ToDictionary();
-
-                if (data.TryGetValue("userId", out var userId) && userId?.ToString() == decodedToken.Uid)
+                if (data.TryGetValue("UserId", out var userId) && userId?.ToString() == decodedToken.Uid)
                 {
-                    if (data.TryGetValue("data", out var dataField))
+                    if (data.TryGetValue("data_fim", out var dataField))
                     {
-                        string dateTimeString = null;
+                        string? dateTimeFimString = null;
 
                         if (dataField is Timestamp firestoreTimestamp)
                         {
+                            // Converte Timestamp para DateTime
                             var dateTimeValue = firestoreTimestamp.ToDateTime();
-                            dateTimeString = dateTimeValue.ToString("dd-MM-yyyy");
+                            dateTimeFimString = dateTimeValue.ToString("dd-MM-yyyy");
                         }
 
-                        if (dateTimeString != null)
+                        // Substitui o valor no dicionário se a conversão foi realizada
+                        if (dateTimeFimString != null)
                         {
-                            data["data"] = dateTimeString;
-
-                            if (startDate.HasValue && DateTime.TryParse(dateTimeString, out var recordDate) && recordDate < startDate.Value)
-                            {
-                                continue;
-                            }
-
-                            if (endDate.HasValue && DateTime.TryParse(dateTimeString, out var recordDate2) && recordDate2 > endDate.Value)
-                            {
-                                continue;
-                            }
+                            data["data_fim"] = dateTimeFimString;
                         }
                     }
+                    if (data.TryGetValue("data_inicio", out var dataField2))
+                    {
+                        string? dateTimeInicioString = null;
 
-                    userDocuments.Add(data);
-                    totalEntries++;
-                }
+                        if (dataField is Timestamp firestoreTimestamp)
+                        {
+                            // Converte Timestamp para DateTime
+                            var dateTimeValue = firestoreTimestamp.ToDateTime();
+                            dateTimeInicioString = dateTimeValue.ToString("dd-MM-yyyy");
+                        }
+
+                        // Substitui o valor no dicionário se a conversão foi realizada
+                        if (dateTimeInicioString != null)
+                        {
+                            data["data_inicio"] = dateTimeInicioString;
+                        }
+                    }
+                    if (data.TryGetValue("data_reg", out var dataField3))
+                    {
+                        string? dateTimeRegString = null;
+
+                        if (dataField is Timestamp firestoreTimestamp)
+                        {
+                            // Converte Timestamp para DateTime
+                            var dateTimeValue = firestoreTimestamp.ToDateTime();
+                            dateTimeRegString = dateTimeValue.ToString("dd-MM-yyyy");
+                        }
+
+                        // Substitui o valor no dicionário se a conversão foi realizada
+                        if (dateTimeRegString != null)
+                        {
+                            data["data_reg"] = dateTimeRegString;
+                        }
+                    }
+                    relatorios.Add(data);
+                }  
             }
-
-            var resumoRelatorio = $"Relatório Adicional: Total de Entradas: {totalEntries}\n" +
-                                  $"Data Início: {startDate?.ToString("dd-MM-yyyy") ?? "não especificada"}\n" +
-                                  $"Data Fim: {endDate?.ToString("dd-MM-yyyy") ?? "não especificada"}\n\n" +
-                                  "Detalhes das Entradas:\n";
-
-            foreach (var doc in userDocuments)
-            {
-                resumoRelatorio += string.Join(", ", doc.Values) + "\n";
-            }
-
-            // Gerar relatório usando o ChatGPT
-            string relatorioGerado = await _chatGptService.GerarRelatorio(resumoRelatorio);
-
-            // Gerar o PDF com o relatório gerado
-            byte[] pdfBytes = _pdfService.GerarPdf(relatorioGerado);
-
-            // Retornar o PDF gerado
-            return File(pdfBytes, "application/pdf", "relatorio_adicional.pdf");
+            return Ok(relatorios);
         }
         catch (Exception ex)
         {
-            return BadRequest($"Erro ao gerar o relatório adicional: {ex.Message}");
+            Console.WriteLine($"Erro ao obter os relatórios: {ex.Message}");
+            return BadRequest(ex.Message);
         }
     }
-
-
-
 }

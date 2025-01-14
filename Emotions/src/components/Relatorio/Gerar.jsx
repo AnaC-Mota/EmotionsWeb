@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { APIService } from "../../http-common";
 import "./Gerar.css";
 import Navbar from "../NavBarLogin/NavBarLogin";
@@ -39,17 +39,6 @@ const GerarRelatorio = () => {
       )
       if (response.status === 200) {
         setRecords(response.data);
-
-        // Enviar registros filtrados para a planilha
-        const planilhaResponse = await APIService.Axios().post("Planilha", {
-          ...params
-        });
-
-        if (planilhaResponse.status === 200) {
-          console.log("Registros enviados com sucesso para a planilha.");
-        } else {
-          throw new Error("Erro ao enviar registros para a planilha.");
-        }
       } else {
         throw new Error("Erro ao buscar registros.");
       }
@@ -60,16 +49,32 @@ const GerarRelatorio = () => {
     }
   };
 
-  // Gerar relatório
-  const gerarRelatorio = () => {
-    if (!reportName) {
-      alert("Por favor, insira um nome para o relatório.");
-      return;
-    }
-    console.log("Relatório Gerado:", { reportName, records });
-    alert("Relatório gerado com sucesso!");
-  };
 
+
+  // Gerar relatório
+  const gerarGrafico = async () => { 
+    const params = {
+      startDate: startDate ? new Date(startDate) : null,
+      endDate: endDate ? new Date(endDate) : null,
+      title: reportName
+    };
+    setLoading(true); setError(null); 
+    try { 
+      const response = await APIService.Axios().post("Grafico", {
+        ...params
+      }); 
+      if (response.status === 200) { 
+        const { pdfPath } = response.data; 
+        console.log("Gráfico gerado com sucesso:", pdfPath); 
+        window.open(pdfPath, "_blank");
+      } else { 
+        throw new Error("Erro ao gerar o gráfico em PDF."); } 
+      } catch (err) { 
+        setError(err.message); 
+      } finally { 
+        setLoading(false); 
+      } 
+    };
   return (
     <>
       <Navbar />
@@ -150,7 +155,7 @@ const GerarRelatorio = () => {
 
         {records.length > 0 && (
           <button
-            onClick={gerarRelatorio}
+            onClick={gerarGrafico}
             className="generate-report-button"
             disabled={loading}
           >

@@ -90,4 +90,33 @@ public class GoogleSheetsService
         request.Execute();
     }
 
+    public Dictionary<string, int> ObterDadosEmocoes()
+    {
+        var service = GetSheetsService();
+        var range = $"{SheetName}!C:C";
+        var request = service.Spreadsheets.Values.Get(SpreadsheetId, range); 
+        var response = request.Execute(); 
+        var values = response.Values; 
+        var contagemEmocoes = new Dictionary<string, int>();
+        if (values != null && values.Count > 1)
+        {
+            foreach (var row in values.Skip(1))
+            {
+                if (row.Count > 0)
+                {
+                    var emocao = row[0].ToString();
+                    if (contagemEmocoes.ContainsKey(emocao))
+                    {
+                        contagemEmocoes[emocao]++;
+                    }
+                    else
+                    {
+                        contagemEmocoes[emocao] = 1;
+                    }
+                }
+            }
+        }
+        return contagemEmocoes;
+    }
+
 }

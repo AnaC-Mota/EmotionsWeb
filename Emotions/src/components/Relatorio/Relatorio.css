@@ -35,7 +35,7 @@
     margin-top: 20px;
   }
   
-  .records-table {
+  .reports-table {
     width: 100%;
     border-collapse: collapse;
     background-color: white;
@@ -44,14 +44,16 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   
-  .records-table th,
-  .records-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
+  .reports-table th, .reports-table td {
+    text-align: left;
+    padding: 15px;
+    vertical-align: middle;
   }
   
-  .records-table th {
-    background-color: #f2f2f2;
-    text-align: left;
+  .reports-table th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    border-bottom: 2px solid #dcdcdc;
   }
+  
   

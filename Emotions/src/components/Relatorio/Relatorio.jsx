@@ -10,7 +10,6 @@ const Relatorio = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-
     const fetchReport = async () => {
       setLoading(true)
       try{
@@ -43,10 +42,8 @@ const Relatorio = () => {
             Criar +
           </button> 
         </div>
-      </div>
-      {reports.length > 0 && (
-          <div className="reports-table-container">
-            <h2>Relatórios</h2>
+        {reports.length > 0 && (
+          
             <table className="reports-table">
               <thead>
                 <tr>
@@ -67,8 +64,9 @@ const Relatorio = () => {
                 ))}
               </tbody>
             </table>
-          </div>
         )}
+      </div>
+      
     </>
   )
 }

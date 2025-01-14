@@ -60,7 +60,6 @@ const RegEmotion = () => {
       console.log(response.data)
     } catch (error) {
       console.error('Erro: ', error);
-      alert('Erro ao se comunicar com o servidor.');
     }
   };
 

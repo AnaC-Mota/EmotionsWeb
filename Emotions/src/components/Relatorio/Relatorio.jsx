@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { APIService } from "../../http-common";
 import "./Relatorio.css";
@@ -7,7 +7,7 @@ import "./Relatorio.css";
 const Relatorio = () => {
     const navigate = useNavigate();
     const [reports, setReports] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     const fetchReport = async () => {
@@ -30,7 +30,7 @@ const Relatorio = () => {
     useEffect(() => {
       fetchReport()
       console.log(reports)
-    }, [])
+    }, [reports])
 
 
   return (
@@ -42,6 +42,10 @@ const Relatorio = () => {
             Criar +
           </button> 
         </div>
+
+      {loading && <p>Carregando...</p>}
+      {error && <p>Erro: {error}</p>}
+
         {reports.length > 0 && (
           
             <table className="reports-table">

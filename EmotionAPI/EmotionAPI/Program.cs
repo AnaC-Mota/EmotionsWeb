@@ -71,7 +71,6 @@ builder.Services.AddSingleton<FirestoreDb>(sp =>
 
 // Registrar o PdfService como Singleton
 builder.Services.AddSingleton<PdfService>();
-builder.Services.AddSingleton<GoogleSheetsService>();
 builder.Services.AddSingleton<GraficoService>();
 
 // Configure o esquema de autenticação e validadores de token
@@ -87,6 +86,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddHttpClient<NewService>();
+
 
 var app = builder.Build();
 
@@ -102,7 +103,7 @@ if (!Directory.Exists(imagesDirectory))
     Directory.CreateDirectory(imagesDirectory);
 }
 
-app.UseStaticFiles(); // Enables serving static files
+app.UseStaticFiles(); 
 
 app.UseStaticFiles(new StaticFileOptions
 {

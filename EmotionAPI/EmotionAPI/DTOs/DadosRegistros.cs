@@ -15,5 +15,7 @@ namespace EmotionAPI.DTOs
 
         [FirestoreProperty]
         public string descricao { get; set; }
+
+
     }
 }

@@ -1,4 +1,3 @@
-import React from 'react'
 import './Programs.css'
 import imagen_1 from '../../assets/imagen_1.png'
 import imagen_2 from '../../assets/imagen_2.png'

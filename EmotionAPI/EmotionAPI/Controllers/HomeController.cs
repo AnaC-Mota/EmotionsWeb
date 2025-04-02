@@ -9,7 +9,7 @@ using Google.Cloud.Firestore;
 using System.Text.Json;
 using System.Reflection;
 using Firebase.Auth;
-using static Google.Cloud.Firestore.V1.StructuredQuery.Types;
+using Google.Cloud.Language.V1;
 
 namespace EmotionAPI.Controllers
 {
@@ -18,10 +18,12 @@ namespace EmotionAPI.Controllers
     public class HomeController : ControllerBase
     {
         private readonly FirestoreDb _firestoreDb;
+        private readonly LanguageServiceClient _languageServiceClient;
 
         public HomeController(FirestoreDb firestoreDb)
         {
             _firestoreDb = firestoreDb;
+            _languageServiceClient = LanguageServiceClient.Create();
         }
 
 
@@ -80,28 +82,63 @@ namespace EmotionAPI.Controllers
         [HttpPost("AddDocument")]
         public async Task<IActionResult> AddDocument([FromBody] DadosRegistros data)
         {
-            
-            var collectionReference = _firestoreDb.Collection("entries");//nome do banco
-            var documentReference = collectionReference.Document();
-            var dictionary = data.GetType()
-                                         .GetProperties(BindingFlags.Public | BindingFlags.Instance)//chama os meus dados
-                                         .ToDictionary(
-                                             prop => prop.Name, //retorna o campo
-                                             prop => prop.GetValue(data) //dado do campo
-                           );
-
-            //adiciona o id do usuario
-            if (HttpContext.Items["User"] is FirebaseToken decodedToken)
+            if (string.IsNullOrEmpty(data.descricao))
             {
-                dictionary.Add("userId", decodedToken.Uid);
+                return BadRequest(new { Message = "O texto não pode estar vazio." });
             }
-            //adiciona a data de registro
-            dictionary.Add("data", Google.Cloud.Firestore.Timestamp.GetCurrentTimestamp());
 
-            await documentReference.SetAsync(dictionary);
+            try
+            {
+                var document = Document.FromPlainText(data.descricao);
+                var sentiment = await _languageServiceClient.AnalyzeSentimentAsync(document);
 
-            return Ok(new { documentId = documentReference.Id });
+                float score = sentiment.DocumentSentiment.Score;
+                float magnitude = sentiment.DocumentSentiment.Magnitude;
+
+                var collectionReference = _firestoreDb.Collection("entries");
+                var documentReference = collectionReference.Document();
+
+                var dictionary = data.GetType()
+                    .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                    .ToDictionary(
+                        prop => prop.Name,
+                        prop => prop.GetValue(data)
+                    );
+
+                // Adiciona o ID do usuário
+                if (HttpContext.Items["User"] is FirebaseToken decodedToken)
+                {
+                    dictionary.Add("userId", decodedToken.Uid);
+                }
+
+                // Adiciona a data de registro
+                dictionary.Add("data", Google.Cloud.Firestore.Timestamp.GetCurrentTimestamp());
+
+                // Converte os valores antes de salvar
+                dictionary.Add("score", Math.Round(Convert.ToDouble(score), 1));
+                dictionary.Add("magnitude", Math.Round(Convert.ToDouble(magnitude), 1));
+
+                
+                try
+                {
+                    await documentReference.SetAsync(dictionary);
+                    Console.WriteLine("Documento salvo com sucesso!");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erro ao salvar no Firestore: {ex.Message}");
+                    return StatusCode(500, new { Message = "Erro ao salvar os dados no Firestore." });
+                }
+
+                return Ok(new { documentId = documentReference.Id, score, magnitude });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro geral: {ex.Message}");
+                return StatusCode(500, new { Message = "Erro interno ao processar a solicitação." });
+            }
         }
+
     }
 }
 

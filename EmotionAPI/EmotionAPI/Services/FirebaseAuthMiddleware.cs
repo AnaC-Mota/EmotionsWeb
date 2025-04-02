@@ -14,6 +14,12 @@ public class FirebaseAuthMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
+        Console.WriteLine("📌 Headers recebidos:");
+        foreach (var header in context.Request.Headers)
+        {
+            Console.WriteLine($"{header.Key}: {header.Value}");
+        }
+
         var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
         if (string.IsNullOrEmpty(token))
@@ -22,6 +28,10 @@ public class FirebaseAuthMiddleware
             await context.Response.WriteAsync("Authorization token is missing.");
             return;
         }
+        token = token.Replace("Bearer ", "").Trim();
+
+        Console.WriteLine($"🔍 Token recebido: {token}");
+
         try
         {
             // Verifica o token na firebase

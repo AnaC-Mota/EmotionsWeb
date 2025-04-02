@@ -1,4 +1,3 @@
-import React from 'react'
 import NavBarLogin from '../components/NavBarLogin/NavBarLogin'
 import RegEmotion from '../components/RegEmotion/RegEmotion'
 

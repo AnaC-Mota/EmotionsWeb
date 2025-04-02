@@ -1,5 +1,6 @@
-import React from "react";
 import "./ModalHistorico.css";
+import PropTypes from "prop-types";
+
 
 const ModalHistorico = ({ isOpen, onRequestClose, record }) => {
   if (!isOpen) return null;
@@ -32,6 +33,18 @@ const ModalHistorico = ({ isOpen, onRequestClose, record }) => {
       </div>
     </div>
   );
+};
+
+ModalHistorico.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onRequestClose: PropTypes.func.isRequired,
+  record: PropTypes.shape({
+    data: PropTypes.string,
+    Emoji: PropTypes.string,
+    titulo: PropTypes.string,
+    emocao: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.string), PropTypes.string]),
+    descricao: PropTypes.string,
+  }).isRequired,
 };
 
 export default ModalHistorico;

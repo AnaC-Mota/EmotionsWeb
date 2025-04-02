@@ -12,7 +12,6 @@ using Firebase.Auth;
 public class RelatorioController : Controller
 {
     private readonly FirestoreDb _firestoreDb;
-    private readonly GoogleSheetsService _googleSheetsService;
     private readonly PdfService _pdfService;
     private readonly GraficoService _graficoService;
 
@@ -22,7 +21,6 @@ public class RelatorioController : Controller
                                 GraficoService graficoService)
     {
         _firestoreDb = firestoreDb;
-        _googleSheetsService = new GoogleSheetsService();
         _pdfService = pdfService;
         _graficoService = graficoService;
     }
@@ -92,7 +90,7 @@ public class RelatorioController : Controller
 
             foreach (var document in userDocuments)
             {
-                // Check if the emotion field exists in the document
+                // se existe as emoções
                 if (document.TryGetValue("emocao", out var emocao))
                 {
                     if (emocao != null)
@@ -101,12 +99,11 @@ public class RelatorioController : Controller
 
                         if (contagemEmocoes.ContainsKey(emocaoValue))
                         {
-                            // If the emotion exists, increment the count
+                            // se existir incrementa
                             contagemEmocoes[emocaoValue]++;
                         }
                         else
                         {
-                            // If it doesn't exist, add it to the dictionary with a count of 1
                             contagemEmocoes[emocaoValue] = 1;
                         }
                     }

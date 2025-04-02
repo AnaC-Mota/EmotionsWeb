@@ -1,4 +1,3 @@
-import React from 'react'
 import Navbar from '../components/NavBarLogin/NavBarLogin'
 import Relatorios from '../components/Relatorio/Relatorio'
 

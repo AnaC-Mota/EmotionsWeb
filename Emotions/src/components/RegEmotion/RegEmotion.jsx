@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
 import './RegEmotion.css';
-import emotionServices from '../../services/emotion-services';
 import {APIService}  from "../../http-common";
 import { useNavigate } from 'react-router-dom';
 
@@ -26,9 +24,6 @@ const RegEmotion = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Divide as emoções por ,
-    const emotionArray = emotions.split(',').map(emotion => emotion.trim());
 
     // Armazena os campos de reistro
     const newEmotion = { 

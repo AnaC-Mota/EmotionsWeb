@@ -10,6 +10,9 @@ class EmotionService{
     post(){
         return APIService.Axios().post("Grafico");
     }
+    getNews(){
+        return APIService.Axios().get("api/news")
+    }
 }
 
 export default new EmotionService();

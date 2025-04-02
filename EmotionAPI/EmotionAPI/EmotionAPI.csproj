@@ -19,6 +19,8 @@
     <PackageReference Include="itext.bouncy-castle-adapter" Version="9.0.0" />
     <PackageReference Include="itext7" Version="9.0.0" />
     <PackageReference Include="JWT" Version="10.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.3" />
+    <PackageReference Include="NewsAPI" Version="0.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="ScottPlot" Version="4.1.44" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />

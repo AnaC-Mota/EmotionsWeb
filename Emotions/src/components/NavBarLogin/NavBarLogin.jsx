@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import './NavbarLogin.css'
 
@@ -19,7 +18,7 @@ const Navbar = () => {
         <li onClick={() => navigate('/regemotion')}>Registrar Emoção</li>
         <li onClick={() => navigate('/historico')}>Historico</li>
         <li onClick={() => navigate('/relatorio')}>Relatório</li>
-        <li>Biblioteca</li>
+        <li onClick={() => navigate('/artigo')}>Biblioteca</li>
         <li onClick={() => logout()}>Logout</li>
 
       </ul>

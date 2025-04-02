@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ModalHistorico from "../ModalHistorico/ModalHistorico";
 import "./Historico.css";
 import { APIService } from "../../http-common";

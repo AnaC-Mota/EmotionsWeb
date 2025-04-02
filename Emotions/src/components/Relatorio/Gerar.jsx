@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { APIService } from "../../http-common";
 import "./Gerar.css";
 import Navbar from "../NavBarLogin/NavBarLogin";
@@ -12,10 +12,10 @@ const GerarRelatorio = () => {
   const [error, setError] = useState(null);
 
   // Função para truncar datas para YYYY-MM-DD
-  const truncateToDate = (isoDate) => {
+  /*const truncateToDate = (isoDate) => {
     const date = new Date(isoDate);
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  };
+  };*/
 
   // Buscar registros do backend
   const fetchRecords = async () => {

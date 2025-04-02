@@ -1,5 +1,4 @@
 // src/Pages/Home.jsx
-import React from 'react';
 import NavbarLogin from '../components/NavBarLogin/NavBarLogin';
 import Hero from '../components/Hero/Hero';
 import Title from '../components/Title/Title';

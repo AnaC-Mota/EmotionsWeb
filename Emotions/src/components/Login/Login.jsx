@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './Login.css';
 import LOGO from '../../assets/LOGO.png';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider} from '../../Firebase/app';
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
+
 
 const Login = ({ isSignUp, setIsSignUp }) => {
   const [email, setEmail] = useState('');
@@ -141,6 +143,11 @@ const Login = ({ isSignUp, setIsSignUp }) => {
       </form>
     </div>
   );
+};
+
+Login.propTypes = {
+  isSignUp: PropTypes.bool.isRequired,
+  setIsSignUp: PropTypes.func.isRequired,
 };
 
 export default Login;

@@ -46,4 +46,35 @@ public class GraficoService
         }
     }
 
+    public string GerarGraficoDeScore(List<ResultScores> datas)
+    {
+        var plt = new ScottPlot.Plot();
+
+        // Converte datas para valores numéricos (OADate)
+        double[] xs = datas.Select(d => d.data.ToOADate()).ToArray();
+        double[] ys = datas.Select(d => d.scores).ToArray();
+
+        // Adiciona o gráfico de linha
+        plt.AddScatter(xs, ys);
+
+        // Formata o eixo X como datas
+        plt.XAxis.DateTimeFormat(true);
+
+        plt.Title("Evolução do Score Emocional");
+        plt.YLabel("Score");
+        plt.XLabel("Data");
+
+        string folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+        if (!Directory.Exists(folder))
+            Directory.CreateDirectory(folder);
+
+        string nomeImagem = $"score_emocional_{Guid.NewGuid()}.png";
+        string caminho = Path.Combine(folder, nomeImagem);
+        plt.SaveFig(caminho);
+        return $"/images/{nomeImagem}";
+    }
+
+
+
+
 }

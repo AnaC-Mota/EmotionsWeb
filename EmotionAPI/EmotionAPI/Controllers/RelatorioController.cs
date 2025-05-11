@@ -9,136 +9,102 @@ using FirebaseAdmin.Auth;
 using Google.Protobuf.Reflection;
 using Firebase.Auth;
 
+
+public class ResultScores()
+{
+    public DateTime data { get; set; }
+    public double scores { get; set; }
+}
 public class RelatorioController : Controller
 {
     private readonly FirestoreDb _firestoreDb;
     private readonly PdfService _pdfService;
     private readonly GraficoService _graficoService;
+    private readonly VertexAiService _vertexAiService;
 
 
     public RelatorioController(FirestoreDb firestoreDb,
                                 PdfService pdfService,
-                                GraficoService graficoService)
+                                GraficoService graficoService,
+                                VertexAiService vertexAiService)
     {
         _firestoreDb = firestoreDb;
         _pdfService = pdfService;
         _graficoService = graficoService;
+        _vertexAiService = vertexAiService;
     }
 
     [HttpPost("Grafico")]
     public async Task<IActionResult> CriarRelatorio([FromBody] FilterDTO filter)
     {
-        try
+        if (HttpContext.Items["User"] is not FirebaseToken decodedToken)
+            return Unauthorized();
+
+        var entriesRef = _firestoreDb.Collection("entries");
+        var snapshot = await entriesRef.GetSnapshotAsync();
+
+        var documentos = new List<Dictionary<string, object>>();
+        var datar = new List<ResultScores>();
+        var contagemEmocoes = new Dictionary<string, int>();
+
+        foreach (var doc in snapshot.Documents)
         {
-            if (HttpContext.Items["User"] is not FirebaseToken decodedToken)
+            var data = doc.ToDictionary();
+            if (data.TryGetValue("userId", out var uid) && uid?.ToString() == decodedToken.Uid)
             {
-                return Unauthorized(new { Message = "User not authenticated." });
-            }
-
-            var entriesRef = _firestoreDb.Collection("entries");
-            var snapshot = await entriesRef.GetSnapshotAsync();
-
-            var userDocuments = new List<Dictionary<string, object>>();
-            DateTime startDateTime = (DateTime)(filter.startDate != null ? filter.startDate : DateTime.MinValue.ToUniversalTime());
-            DateTime endDateTime = (DateTime)(filter.endDate != null ? filter.endDate : DateTime.MaxValue.ToUniversalTime());
-            foreach (var document in snapshot.Documents)
-            {
-                var data = document.ToDictionary();
-
-                // Verifica o userId
-                if (data.TryGetValue("userId", out var userId) && userId?.ToString() == decodedToken.Uid)
+                if (data.TryGetValue("data", out var dataField) && dataField is Timestamp ts)
                 {
-                    if (data.TryGetValue("data", out var dataField))
+                    DateTime dataRegistro = ts.ToDateTime();
+                    if (filter.startDate.HasValue && dataRegistro < filter.startDate.Value) continue;
+                    if (filter.endDate.HasValue && dataRegistro > filter.endDate.Value) continue;
+
+                    documentos.Add(data);
+
+                    if (data.TryGetValue("score", out var score) && double.TryParse(score.ToString(), out double scoreVal))
+                        datar.Add(new ResultScores() { data = dataRegistro, scores = scoreVal });
+
+                    if (data.TryGetValue("emocao", out var emocao))
                     {
-                        var dateTimeValue = new DateTime();
-                        string dateTimeString = null;
-
-                        if (dataField is Timestamp firestoreTimestamp)
-                        {
-                            // Converte Timestamp para DateTime
-                            dateTimeValue = firestoreTimestamp.ToDateTime();
-                            dateTimeString = dateTimeValue.ToString("dd-MM-yyyy");
-                        }
-
-                        // Substitui o valor no dicionário se a conversão foi realizada
-                        if (dateTimeString != null)
-                        {
-                            data["data"] = dateTimeString;
-
-                            if (filter.startDate.HasValue && DateTime.TryParse(dateTimeString, out var recordDate) && recordDate < filter.startDate.Value)
-                            {
-                                continue;
-                            }
-
-                            if (filter.endDate.HasValue && DateTime.TryParse(dateTimeString, out var recordDate2) && recordDate2 > filter.endDate.Value)
-                            {
-                                continue;
-                            }
-                        }
-
-                        if (dateTimeValue >= filter.startDate && dateTimeValue <= filter.endDate)
-                        {
-                            userDocuments.Add(data);
-                        }
-
-                    }
-
-                }
-            }
-
-            var contagemEmocoes = new Dictionary<string, int>();
-
-            foreach (var document in userDocuments)
-            {
-                // se existe as emoções
-                if (document.TryGetValue("emocao", out var emocao))
-                {
-                    if (emocao != null)
-                    {
-                        string emocaoValue = emocao.ToString();
-
-                        if (contagemEmocoes.ContainsKey(emocaoValue))
-                        {
-                            // se existir incrementa
-                            contagemEmocoes[emocaoValue]++;
-                        }
-                        else
-                        {
-                            contagemEmocoes[emocaoValue] = 1;
-                        }
+                        string val = emocao.ToString();
+                        if (contagemEmocoes.ContainsKey(val)) contagemEmocoes[val]++;
+                        else contagemEmocoes[val] = 1;
                     }
                 }
             }
-
-            string caminhoImagem = _graficoService.GerarGraficoDeEmocoes(contagemEmocoes);
-
-            string pdfUrl = _pdfService.GerarPDFComImagem(caminhoImagem);
-
-            string fullPdfUrl = $"{Request.Scheme}://{Request.Host}{pdfUrl}";
-
-            var relatorioRef = _firestoreDb.Collection("relatorios").Document();
-
-            // Criação do dicionário com os dados do relatório
-            var dadosRelatorio = new Dictionary<string, object>
-            {
-            { "UserId", decodedToken.Uid },                 
-            { "data_fim", Timestamp.FromDateTime(endDateTime) },
-            { "data_inicio", Timestamp.FromDateTime(startDateTime) },
-            { "data_reg", Timestamp.FromDateTime(DateTime.UtcNow) },
-            { "nome", filter.Title != null ? filter.Title : "" }, 
-            { "relatorio", fullPdfUrl } 
-        };
-
-            // Salvar o documento na coleção "relatorio"
-            await relatorioRef.SetAsync(dadosRelatorio);
-
-            return Ok(new { pdfPath = fullPdfUrl });
         }
-        catch (Exception ex)
-        {
-            return BadRequest($"Erro ao atualizar a planilha: {ex.Message}");
-        }
+
+        // Gera insights com Vertex AI
+        var insights = await _vertexAiService.GerarInsightsAsync(documentos);
+
+        // Gráfico de emoções e score
+
+        string imagemScore = _graficoService.GerarGraficoDeScore(datar.OrderBy(t => t.data).ToList());
+
+        // Gerar PDF com insights e imagem
+        var pdfBytes = _pdfService.GerarPdfComTextoEImagem(insights, imagemScore);
+        string pdfFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files");
+        Directory.CreateDirectory(pdfFolder);
+        string pdfFileName = $"relatorio_{Guid.NewGuid()}.pdf";
+        string pdfPath = Path.Combine(pdfFolder, pdfFileName);
+        await System.IO.File.WriteAllBytesAsync(pdfPath, pdfBytes);
+
+        string fullPdfUrl = $"{Request.Scheme}://{Request.Host}/files/{pdfFileName}";
+
+        // Salvar no Firestore
+        var relatorioRef = _firestoreDb.Collection("relatorios").Document();
+        await relatorioRef.SetAsync(new Dictionary<string, object>
+    {
+        { "UserId", decodedToken.Uid },
+        { "data_fim", Timestamp.FromDateTime(filter.endDate ?? DateTime.UtcNow) },
+        { "data_inicio", Timestamp.FromDateTime(filter.startDate ?? DateTime.MinValue) },
+        { "data_reg", Timestamp.FromDateTime(DateTime.UtcNow) },
+        { "nome", filter.Title ?? "Relatório" },
+        { "relatorio", fullPdfUrl }
+    });
+
+        return Ok(new { pdfUrl = fullPdfUrl });
     }
+
 
     [HttpGet("Relatorios")]
     public async Task<IActionResult> GetAllRelatoriosAsync()

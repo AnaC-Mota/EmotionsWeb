@@ -6,6 +6,7 @@ using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Google.Cloud.Firestore;
 using Microsoft.Extensions.FileProviders;
+using Google.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +51,10 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "vertexAI.json");
+builder.Services.AddSingleton<VertexAiService>();
+
 
 // Path to the service account JSON key
 string pathToCredential = "./AdminSDK.json";

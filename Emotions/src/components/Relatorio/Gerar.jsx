@@ -64,9 +64,9 @@ const GerarRelatorio = () => {
         ...params
       }); 
       if (response.status === 200) { 
-        const { pdfPath } = response.data; 
-        console.log("Gráfico gerado com sucesso:", pdfPath); 
-        window.open(pdfPath, "_blank");
+        const { pdfUrl  } = response.data; 
+        console.log("Gráfico gerado com sucesso:", pdfUrl ); 
+        window.open(pdfUrl , "_blank");
       } else { 
         throw new Error("Erro ao gerar o gráfico em PDF."); } 
       } catch (err) { 

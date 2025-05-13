@@ -138,7 +138,7 @@ public class VertexAiService
 
     private string MontarPrompt(List<Dictionary<string, object>> registros)
     {
-        string prompt = "Você é um psicólogo virtual. Analise os registros emocionais abaixo e gere um relatório com padrões, sugestões e conselhos:\n\n";
+        string prompt = "Você é um psicólogo virtual. Analise os registros emocionais abaixo e gere um relatório com padrões, sugestões e conselhos. Seja específicos nas emoções que mais apareceram e também relacione com a magnitude da emoção sentida. Não seja tão formal:\n\n";
         foreach (var r in registros)
         {
             prompt += $"- Título: {r["titulo"]}, Emoção: {r["emocao"]}, Score: {r["score"]}, Magnitude: {r["magnitude"]}, Descrição: {r["descricao"]}\n";

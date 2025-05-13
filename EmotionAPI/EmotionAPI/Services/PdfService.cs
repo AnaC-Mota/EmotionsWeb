@@ -11,7 +11,7 @@ using iText.Layout.Properties;
 
 public class PdfService
 {
-    public byte[] GerarPdfComTextoEImagem(string relatorioTexto, string caminhoImagem)
+    public byte[] GerarPdfComTextoEImagem(string relatorioTexto, string caminhoImagem, string caminhoImagemEmocoes)
     {
         using var ms = new MemoryStream();
         var writer = new PdfWriter(ms);
@@ -42,6 +42,21 @@ public class PdfService
             var imageData = ImageDataFactory.Create(imgPath);
             var img = new Image(imageData).SetAutoScale(true);
             document.Add(img);
+        }
+
+        if(!string.IsNullOrEmpty(caminhoImagemEmocoes))
+        {
+            document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+            document.Add(new Paragraph("Frequência das Emoções")
+                .SetFont(boldFont)
+                .SetFontSize(14)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetMarginBottom(10));
+
+            string imgPathEmocoes = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", caminhoImagemEmocoes.TrimStart('/'));
+            var imageDataEmocoes = ImageDataFactory.Create(imgPathEmocoes);
+            var imgEmocoes = new Image(imageDataEmocoes).SetAutoScale(true);
+            document.Add(imgEmocoes);
         }
 
         document.Close();

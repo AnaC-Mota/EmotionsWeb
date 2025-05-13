@@ -64,6 +64,7 @@ const RegEmotion = () => {
 
   return (
     <div className="regemotion-container">
+          <h1 className='h1'>Registrar Emoção</h1>
       <form onSubmit={handleSubmit} className='regemotion-form'>
          <div className='regemotion-formleft'>
             <div className="emoji-picker-container">
@@ -110,7 +111,7 @@ const RegEmotion = () => {
           </label>
         
           <label className="emotion-label">
-              Emoções (separadas por vírgula):
+              Emoções:
               <input
               type="text"
               value={emotions}

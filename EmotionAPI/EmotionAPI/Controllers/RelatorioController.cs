@@ -76,12 +76,14 @@ public class RelatorioController : Controller
         // Gera insights com Vertex AI
         var insights = await _vertexAiService.GerarInsightsAsync(documentos);
 
+        string imagemEmocoes = _graficoService.GerarGraficoDeEmocoes(contagemEmocoes);
+
         // Gráfico de emoções e score
 
         string imagemScore = _graficoService.GerarGraficoDeScore(datar.OrderBy(t => t.data).ToList());
 
         // Gerar PDF com insights e imagem
-        var pdfBytes = _pdfService.GerarPdfComTextoEImagem(insights, imagemScore);
+        var pdfBytes = _pdfService.GerarPdfComTextoEImagem(insights, imagemScore, imagemEmocoes);
         string pdfFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files");
         Directory.CreateDirectory(pdfFolder);
         string pdfFileName = $"relatorio_{Guid.NewGuid()}.pdf";

@@ -21,14 +21,14 @@
     padding: 5px 15px;
     font-size: 14px;
     color: white;
-    background-color: #007bff;
+    background-color: #7627af;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
   }
   .create-report-button:hover {
-    background-color: #007bff; /* Azul mais escuro ao passar o mouse */
+    background-color: #4b0082; /* Azul mais escuro ao passar o mouse */
   }
 
   .records-table-container {

@@ -1,41 +1,47 @@
 import { useEffect, useState } from "react";
-import EmotionService from "../../services/emotion-services"; // Certifique-se de que o caminho está correto
+import EmotionService from "../../services/emotion-services";
+import './Artigo.css';
 
 const App = () => {
   const [news, setNews] = useState([]);
-  const [loading, setLoading] = useState(true); // Estado para controlar o carregamento
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     EmotionService.getNews()
       .then((response) => {
-        console.log("Dados recebidos:", response.data);
         setNews(response.data);
       })
       .catch((error) => {
         console.error("Erro ao buscar notícias:", error);
       })
-      .finally(() => setLoading(false)); // Define "loading" como falso após a resposta
+      .finally(() => setLoading(false));
   }, []);
 
   return (
-    <div className="container">
-      <h1>Notícias sobre Saúde Mental</h1>
-      {loading ? (
-        <p>Carregando notícias...</p>
-      ) : news.length === 0 ? (
-        <p>Nenhuma notícia disponível no momento.</p>
-      ) : (
-        news.map((article, index) => (
-          <div key={index} className="news-card">
-            <h2>{article.title}</h2>
-            <p>{article.description}</p>
-            <a href={article.url} target="_blank" rel="noopener noreferrer">
-              Leia mais
-            </a>
+   <div className="container">
+  <h1>Notícias sobre Saúde Mental</h1>
+  {loading ? (
+    <p>Carregando notícias...</p>
+  ) : news.length === 0 ? (
+    <p>Nenhuma notícia disponível no momento.</p>
+  ) : (
+    <div className="news-cards">
+      {news.map((article, index) => (
+        <a key={index} href={article.url} target="_blank" rel="noopener noreferrer" className="news-card-link">
+          <div className="news-card">
+            <img
+              src={article.urlToImage || "/placeholder.png"}
+              alt={article.title}
+              className="news-image"
+            />
+            <h3 className="news-title">{article.title}</h3>
+            <p className="news-description">{article.description}</p>
           </div>
-        ))
-      )}
+        </a>
+      ))}
     </div>
+  )}
+</div>
   );
 };
 
